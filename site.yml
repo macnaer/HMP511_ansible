@@ -1,0 +1,6 @@
+---
+- name: Base configuration for webservers
+  hosts: webservers
+  become: true
+  roles:
+    - packages
