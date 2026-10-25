@@ -29,9 +29,13 @@ wordpress_packages:
   - python3-pymysql
   - unzip
 
-wordpress_domain: ""
+# When false, no Let's Encrypt certificate is requested and the site is served
+# over plain HTTP on port 80. Set a real domain and switch to true to enable
+# certificate issuance later.
+wordpress_https_enabled: false
+wordpress_domain: "{{ ansible_host }}"
 wordpress_letsencrypt_email: ""
-wordpress_admin_email: ""
+wordpress_admin_email: admin@example.com
 wordpress_admin_user: wordpressadmin
 wordpress_site_title: WordPress Site
 wordpress_db_name: wordpress
@@ -41,3 +45,4 @@ wordpress_acme_webroot: /var/lib/letsencrypt
 
 # Define wordpress_db_password and wordpress_admin_password here as Ansible Vault
 # encrypted values. See README.md for the encrypt_string commands.
+# TODO: paste the two vault blocks below before deploying.
