@@ -46,26 +46,29 @@ Install the required collection on the control node:
 ansible-galaxy collection install -r requirements.yml
 ```
 
-Run from the repository root on the control node. After installing the collection above, run the local syntax check:
+## Run the WordPress deployment
+
+`roles/wordpress/` is an Ansible role, not a standalone playbook. The entry playbook is `site.yml`; it runs the `packages` role first, followed by `wordpress`. Run the following commands from the repository root on the Ubuntu control node, after configuring the variables and installing the collection above.
+
+First, check playbook syntax locally:
 
 ```bash
 ansible-playbook site.yml --ask-vault-pass --syntax-check
 ```
 
-The ping and dry-run commands contact managed hosts; get approval before running them. Run the dry run before deployment:
+Then run a dry run. This contacts the managed hosts and requires approval:
 
 ```bash
-ansible webservers -m ansible.builtin.ping
 ansible-playbook site.yml --ask-vault-pass --check --diff
 ```
 
-Review the dry-run results and obtain explicit approval before applying changes:
+After reviewing the dry-run results, obtain explicit approval before applying the deployment:
 
 ```bash
 ansible-playbook site.yml --ask-vault-pass
 ```
 
-Check mode does not execute command tasks such as WP-CLI installation or certificate issuance, so it cannot verify those runtime operations.
+The deployment command runs both base package setup and WordPress. Check mode does not execute command tasks such as WP-CLI installation or certificate issuance, so it cannot verify those runtime operations.
 
 ## Adding packages
 
