@@ -28,7 +28,7 @@ AGENTS.md                     # rules for AI coding agents
 
 ## WordPress configuration
 
-The `wordpress` role installs or updates Apache, MariaDB, PHP and required PHP extensions from the Ubuntu 26.04 repositories. It deploys WordPress, creates its database and administrator, configures Apache, and requests a Let's Encrypt certificate using Certbot. Certificate renewal is enabled automatically.
+The `wordpress` role installs or updates Apache, MariaDB, PHP and required PHP extensions from the Ubuntu 26.04 repositories. It deploys WordPress, creates its database and administrator, configures Apache, and requests a Let's Encrypt certificate using Certbot. Certificate renewal is enabled automatically. The role does not install Certbot itself; install it on the target host before switching `wordpress_https_enabled` to `true`.
 
 Set `wordpress_domain`, `wordpress_letsencrypt_email`, and `wordpress_admin_email` in `group_vars/webservers.yml`. Before certificate issuance, the domain must resolve publicly to the server and inbound TCP ports 80 and 443 must be reachable. Other non-secret role settings, such as the database name and site title, are also defined there.
 
