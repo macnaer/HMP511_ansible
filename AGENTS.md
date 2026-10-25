@@ -27,7 +27,7 @@ Ansible playbooks for managing Linux hosts on AWS.
 3. Never commit secrets (SSH keys, `.pem`, passwords, tokens).
 4. Do not change `hosts` or inventory variables without explicit approval.
 5. Store `wordpress_db_password` and `wordpress_admin_password` as Ansible Vault encrypted values in `group_vars/webservers.yml`. Keep the Vault password outside the repository. Never put plaintext credentials in role tasks, templates, documentation, or command-line arguments.
-6. Before the WordPress role runs, require a configured domain and email addresses, DNS pointing to the target host, and network access to ports 80 and 443 for Let's Encrypt.
+6. When `wordpress_https_enabled` is `true`, the WordPress role requires a configured domain and email addresses, DNS pointing to the target host, and network access to ports 80 and 443 for Let's Encrypt. When it is `false`, the site is served over plain HTTP and no certificate is requested.
 7. Interact with GitHub through the `github` MCP server (configured globally in OpenCode, authenticated with a fine-grained PAT from the `GITHUB_MCP_PAT` environment variable). Do not use the `gh` CLI. The token file `.secret` is gitignored and must never be committed or printed.
 
 ## Commands

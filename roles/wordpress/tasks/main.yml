@@ -3,10 +3,10 @@
   ansible.builtin.assert:
     that:
       - wordpress_domain | default('') | length > 0
-      - wordpress_letsencrypt_email | default('') | length > 0
       - wordpress_admin_email | default('') | length > 0
       - wordpress_db_password | default('') | string | length > 0
       - wordpress_admin_password | default('') | string | length > 0
+      - not wordpress_https_enabled | default(true) | bool or wordpress_letsencrypt_email | default('') | length > 0
     fail_msg: >-
       Set the WordPress domain and email values in group_vars/webservers.yml,
       and define wordpress_db_password and wordpress_admin_password using
@@ -29,6 +29,7 @@
     owner: root
     group: root
     mode: '0755'
+  when: wordpress_https_enabled | default(true) | bool
 
 - name: Reload Apache after certificate renewal
   ansible.builtin.copy:
@@ -39,6 +40,7 @@
     owner: root
     group: root
     mode: '0750'
+  when: wordpress_https_enabled | default(true) | bool
 
 - name: Start and enable MariaDB
   ansible.builtin.service:
@@ -150,7 +152,7 @@
       - wp
       - core
       - install
-      - "--url=https://{{ wordpress_domain }}"
+      - "--url={{ 'https' if wordpress_https_enabled | default(true) | bool else 'http' }}://{{ wordpress_domain }}"
       - "--title={{ wordpress_site_title }}"
       - "--admin_user={{ wordpress_admin_user }}"
       - "--admin_email={{ wordpress_admin_email }}"
@@ -173,11 +175,13 @@
   ansible.builtin.command:
     cmd: a2enmod ssl
     creates: /etc/apache2/mods-enabled/ssl.load
+  when: wordpress_https_enabled | default(true) | bool
   notify: Reload Apache
 
 - name: Check for an existing Let's Encrypt certificate
   ansible.builtin.stat:
     path: "/etc/letsencrypt/live/{{ wordpress_domain }}/fullchain.pem"
+  when: wordpress_https_enabled | default(true) | bool
   register: wordpress_certificate
 
 - name: Configure temporary HTTP virtual host for certificate issuance
@@ -187,7 +191,7 @@
     owner: root
     group: root
     mode: '0644'
-  when: not wordpress_certificate.stat.exists
+  when: wordpress_https_enabled | default(true) | bool and not wordpress_certificate.stat.exists
   notify: Reload Apache
 
 - name: Configure HTTPS virtual host when a certificate exists
@@ -197,7 +201,17 @@
     owner: root
     group: root
     mode: '0644'
-  when: wordpress_certificate.stat.exists
+  when: wordpress_https_enabled | default(true) | bool and wordpress_certificate.stat.exists
+  notify: Reload Apache
+
+- name: Configure HTTP virtual host when HTTPS is disabled
+  ansible.builtin.template:
+    src: wordpress-http.conf.j2
+    dest: /etc/apache2/sites-available/wordpress.conf
+    owner: root
+    group: root
+    mode: '0644'
+  when: not wordpress_https_enabled | default(true) | bool
   notify: Reload Apache
 
 - name: Enable WordPress Apache site
@@ -231,7 +245,7 @@
       - --domain
       - "{{ wordpress_domain }}"
     creates: "/etc/letsencrypt/live/{{ wordpress_domain }}/fullchain.pem"
-  when: not wordpress_certificate.stat.exists
+  when: wordpress_https_enabled | default(true) | bool and not wordpress_certificate.stat.exists
 
 - name: Configure HTTPS virtual host
   ansible.builtin.template:
@@ -240,6 +254,7 @@
     owner: root
     group: root
     mode: '0644'
+  when: wordpress_https_enabled | default(true) | bool
   notify: Reload Apache
 
 - name: Start and enable automatic certificate renewal
@@ -247,3 +262,4 @@
     name: certbot.timer
     state: started
     enabled: true
+  when: wordpress_https_enabled | default(true) | bool

@@ -32,6 +32,8 @@ The `wordpress` role installs or updates Apache, MariaDB, PHP and required PHP e
 
 Set `wordpress_domain`, `wordpress_letsencrypt_email`, and `wordpress_admin_email` in `group_vars/webservers.yml`. Before certificate issuance, the domain must resolve publicly to the server and inbound TCP ports 80 and 443 must be reachable. Other non-secret role settings, such as the database name and site title, are also defined there.
 
+Set `wordpress_https_enabled` to `false` to deploy without HTTPS: no Let's Encrypt certificate is requested, `wordpress_letsencrypt_email` is not required, and the site is served over plain HTTP on port 80. In that mode `wordpress_domain` defaults to each host's inventory IP (`{{ ansible_host }}`), so the playbook can be run against any single host with `--limit`. Set a real domain and switch the flag back to `true` to enable certificate issuance later.
+
 Add `wordpress_db_password` and `wordpress_admin_password` to `group_vars/webservers.yml` as Ansible Vault encrypted variables. Run each command separately, enter the Vault password when prompted, provide the secret on standard input, and press Ctrl-D to finish. Paste each resulting YAML value into that file:
 
 ```bash
@@ -70,6 +72,23 @@ ansible-playbook site.yml --ask-vault-pass
 ```
 
 The deployment command runs both base package setup and WordPress. Check mode does not execute command tasks such as WP-CLI installation or certificate issuance, so it cannot verify those runtime operations.
+
+## Run on one server
+
+`site.yml` normally targets the whole `webservers` group. Pass a host alias with `--limit` to run against one inventory host only:
+
+```bash
+# Dry run against server1
+ansible-playbook site.yml --ask-vault-pass --check --diff --limit server1
+
+# Apply changes to server1
+ansible-playbook site.yml --ask-vault-pass --limit server1
+
+# The same commands work with server2 to target the other host
+ansible-playbook site.yml --ask-vault-pass --check --diff --limit server2
+```
+
+Both the `packages` and `wordpress` roles run only on the selected host. The alias must exist in `hosts` and belong to the `webservers` group. With `wordpress_https_enabled: false` each host serves its own inventory IP, so the same group variables work for either server.
 
 ## Adding packages
 
