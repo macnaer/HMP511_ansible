@@ -9,7 +9,7 @@ Ansible playbooks for configuring Linux hosts on AWS.
 - SSH private key `Stockholm_3.pem` at `/etc/ansible/keys/` on the control node. The key is never committed.
 - Passwordless `sudo` for the `ubuntu` user on each managed host.
 - A public domain name pointing to the managed host's public IP address before requesting a Let's Encrypt certificate.
-- The `community.mysql` Ansible collection, installed from `requirements.yml` on the control node.
+- The `ansible.mysql` Ansible collection, installed from `requirements.yml` on the control node.
 
 ## Project layout
 
