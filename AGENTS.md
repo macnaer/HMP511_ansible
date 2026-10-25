@@ -11,6 +11,8 @@ Ansible playbooks for managing Linux hosts on AWS.
 - Entry playbook: `site.yml`.
 - Roles: `roles/<name>/`.
 - Group variables: `group_vars/<group>.yml`.
+- WordPress role: `roles/wordpress/` deploys Apache, MariaDB, PHP, WordPress, and HTTPS to Ubuntu Server 26.04.
+- Collection dependencies: `requirements.yml` (currently `community.mysql`). Install them on the control node with `ansible-galaxy collection install -r requirements.yml`.
 - SSH key path (`ansible_ssh_private_key_file`) is defined in `hosts` and must exist on the control node at `/etc/ansible/keys/`. The key is never committed (`/keys/*` is in `.gitignore`).
 
 ## Language
@@ -24,6 +26,8 @@ Ansible playbooks for managing Linux hosts on AWS.
 2. Never push to `master`. Work in a feature branch and open a Pull Request.
 3. Never commit secrets (SSH keys, `.pem`, passwords, tokens).
 4. Do not change `hosts` or inventory variables without explicit approval.
+5. Store `wordpress_db_password` and `wordpress_admin_password` as Ansible Vault encrypted values in `group_vars/webservers.yml`. Keep the Vault password outside the repository. Never put plaintext credentials in role tasks, templates, documentation, or command-line arguments.
+6. Before the WordPress role runs, require a configured domain and email addresses, DNS pointing to the target host, and network access to ports 80 and 443 for Let's Encrypt.
 
 ## Commands
 
@@ -37,6 +41,7 @@ ansible webservers -m ping
 ```
 
 Order: syntax check, then dry run, then real run (only after approval).
+The syntax check is local. Ping, dry-run, and real runs contact managed hosts and require approval before execution; real deployment requires explicit approval after reviewing the dry-run results.
 
 ## Conventions
 
@@ -45,3 +50,5 @@ See the skills in `.opencode/skills/`:
 - `ansible-playbook-conventions`: writing playbooks and roles.
 - `ansible-run-playbook`: running and verifying playbooks.
 - `git-pr-workflow`: branches, commits, and pull requests.
+
+When editing the WordPress role, preserve idempotency, use fully qualified Ansible module names, manage MariaDB with `community.mysql`, and pass WP-CLI passwords through standard input with secret-bearing tasks marked `no_log: true`.

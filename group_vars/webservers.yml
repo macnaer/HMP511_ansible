@@ -7,3 +7,37 @@ packages_list:
   - htop
   - unzip
   - net-tools
+
+# WordPress stack packages are kept current from the Ubuntu 26.04 repositories.
+wordpress_packages:
+  - apache2
+  - certbot
+  - mariadb-client
+  - mariadb-server
+  - libapache2-mod-php
+  - php
+  - php-bcmath
+  - php-cli
+  - php-curl
+  - php-gd
+  - php-imagick
+  - php-intl
+  - php-mbstring
+  - php-mysql
+  - php-xml
+  - php-zip
+  - python3-pymysql
+  - unzip
+
+wordpress_domain: ""
+wordpress_letsencrypt_email: ""
+wordpress_admin_email: ""
+wordpress_admin_user: wordpressadmin
+wordpress_site_title: WordPress Site
+wordpress_db_name: wordpress
+wordpress_db_user: wordpress
+wordpress_install_path: /var/www/wordpress
+wordpress_acme_webroot: /var/lib/letsencrypt
+
+# Define wordpress_db_password and wordpress_admin_password here as Ansible Vault
+# encrypted values. See README.md for the encrypt_string commands.
