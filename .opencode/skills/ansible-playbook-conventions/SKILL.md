@@ -28,7 +28,7 @@ roles/<role>/defaults/main.yml  # only if needed; prefer group_vars
 
 - Target Ubuntu Server 26.04. Install the current supported PHP version and extensions from the Ubuntu APT repositories; do not add an unrequested third-party PHP repository.
 - Keep WordPress, Apache, MariaDB, and PHP settings in `group_vars/webservers.yml`.
-- Manage MariaDB databases and users with `community.mysql`; install the target-side Python MySQL driver and use the local Unix socket for root administration where supported.
+- Manage MariaDB databases and users with `ansible.mysql`; install the target-side Python MySQL driver and use the local Unix socket for root administration where supported.
 - Keep `wordpress_db_password` and `wordpress_admin_password` encrypted with Ansible Vault. Never commit plaintext secrets or pass passwords as command-line arguments.
 - When using WP-CLI with a secret, read it through `--prompt=<argument>` and the command module's `stdin`; mark the task `no_log: true`.
 - Make WordPress configuration, Apache virtual hosts, Certbot issuance, and certificate renewal repeatable. Preserve the HTTP ACME challenge path when redirecting other HTTP traffic to HTTPS.
