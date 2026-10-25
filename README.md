@@ -5,10 +5,10 @@ Ansible playbooks for configuring Linux hosts on AWS.
 ## Requirements
 
 - Control node: Ubuntu Linux with `ansible-core` installed system-wide (tested with 2.21.x).
-- Managed WordPress host: Ubuntu Server 26.04 with inbound TCP ports 80 and 443 reachable from the internet.
+- Managed WordPress host: Ubuntu Server 24.04. Inbound TCP port 80 must be reachable from the internet; port 443 is additionally required when `wordpress_https_enabled` is `true`.
 - SSH private key `Stockholm_3.pem` at `/etc/ansible/keys/` on the control node. The key is never committed.
 - Passwordless `sudo` for the `ubuntu` user on each managed host.
-- A public domain name pointing to the managed host's public IP address before requesting a Let's Encrypt certificate.
+- A public domain name pointing to the managed host's public IP address before enabling `wordpress_https_enabled` to request a Let's Encrypt certificate.
 - The `ansible.mysql` Ansible collection, installed from `requirements.yml` on the control node.
 
 ## Project layout
@@ -28,7 +28,7 @@ AGENTS.md                     # rules for AI coding agents
 
 ## WordPress configuration
 
-The `wordpress` role installs or updates Apache, MariaDB, PHP and required PHP extensions from the Ubuntu 26.04 repositories. It deploys WordPress, creates its database and administrator, configures Apache, and requests a Let's Encrypt certificate using Certbot. Certificate renewal is enabled automatically. The role does not install Certbot itself; install it on the target host before switching `wordpress_https_enabled` to `true`.
+The `wordpress` role installs or updates Apache, MariaDB, PHP and required PHP extensions from the Ubuntu 24.04 repositories. It deploys WordPress, creates its database and administrator, configures Apache, and requests a Let's Encrypt certificate using Certbot. Certificate renewal is enabled automatically. The role does not install Certbot itself; install it on the target host before switching `wordpress_https_enabled` to `true`.
 
 Set `wordpress_domain`, `wordpress_letsencrypt_email`, and `wordpress_admin_email` in `group_vars/webservers.yml`. Before certificate issuance, the domain must resolve publicly to the server and inbound TCP ports 80 and 443 must be reachable. Other non-secret role settings, such as the database name and site title, are also defined there.
 
@@ -72,6 +72,8 @@ ansible-playbook site.yml --ask-vault-pass
 ```
 
 The deployment command runs both base package setup and WordPress. Check mode does not execute command tasks such as WP-CLI installation or certificate issuance, so it cannot verify those runtime operations.
+
+On the very first deployment the dry run stops at service tasks (for example `Start and enable MariaDB`) with an error such as `Could not find the requested service`, because check mode does not install packages and the service unit does not exist yet. This is expected: review the output up to that point, then run the real deployment. Later dry runs pass completely once the packages are installed.
 
 ## Run on one server
 

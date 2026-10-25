@@ -11,7 +11,7 @@ packages_list:
   - unzip
   - net-tools
 
-# WordPress stack packages are kept current from the Ubuntu 26.04 repositories.
+# WordPress stack packages are kept current from the Ubuntu 24.04 repositories.
 wordpress_packages:
   - apache2
   - mariadb-client

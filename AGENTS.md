@@ -11,7 +11,7 @@ Ansible playbooks for managing Linux hosts on AWS.
 - Entry playbook: `site.yml`.
 - Roles: `roles/<name>/`.
 - Group variables: `group_vars/<group>.yml`.
-- WordPress role: `roles/wordpress/` deploys Apache, MariaDB, PHP, WordPress, and HTTPS to Ubuntu Server 26.04.
+- WordPress role: `roles/wordpress/` deploys Apache, MariaDB, PHP, WordPress, and HTTPS to Ubuntu Server 24.04.
 - Collection dependencies: `requirements.yml` (currently `ansible.mysql`). Install them on the control node with `ansible-galaxy collection install -r requirements.yml`.
 - SSH key path (`ansible_ssh_private_key_file`) is defined in `hosts` and must exist on the control node at `/etc/ansible/keys/`. The key is never committed (`/keys/*` is in `.gitignore`).
 
