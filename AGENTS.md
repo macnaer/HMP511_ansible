@@ -28,6 +28,7 @@ Ansible playbooks for managing Linux hosts on AWS.
 4. Do not change `hosts` or inventory variables without explicit approval.
 5. Store `wordpress_db_password` and `wordpress_admin_password` as Ansible Vault encrypted values in `group_vars/webservers.yml`. Keep the Vault password outside the repository. Never put plaintext credentials in role tasks, templates, documentation, or command-line arguments.
 6. Before the WordPress role runs, require a configured domain and email addresses, DNS pointing to the target host, and network access to ports 80 and 443 for Let's Encrypt.
+7. Interact with GitHub through the `github` MCP server (configured globally in OpenCode, authenticated with a fine-grained PAT from the `GITHUB_MCP_PAT` environment variable). Do not use the `gh` CLI. The token file `.secret` is gitignored and must never be committed or printed.
 
 ## Commands
 
@@ -49,6 +50,6 @@ See the skills in `.opencode/skills/`:
 
 - `ansible-playbook-conventions`: writing playbooks and roles.
 - `ansible-run-playbook`: running and verifying playbooks.
-- `git-pr-workflow`: branches, commits, and pull requests.
+- `git-pr-workflow`: branches, commits, and pull requests (PRs are created via the GitHub MCP server).
 
 When editing the WordPress role, preserve idempotency, use fully qualified Ansible module names, manage MariaDB with `ansible.mysql`, and pass WP-CLI passwords through standard input with secret-bearing tasks marked `no_log: true`.
