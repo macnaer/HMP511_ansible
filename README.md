@@ -23,6 +23,7 @@ roles/wordpress/              # Apache, MariaDB, PHP, WordPress and HTTPS deploy
 requirements.yml              # Ansible collection dependencies
 AGENTS.md                     # rules for AI coding agents
 .opencode/skills/             # agent skills for this repository
+.secret                       # local GitHub PAT storage (gitignored, never committed)
 ```
 
 ## WordPress configuration
@@ -77,5 +78,5 @@ Edit `packages_list` in `group_vars/webservers.yml` to change base packages, or 
 ## Contributing
 
 - Work in a feature branch. Never push to `master`.
-- Open a Pull Request against `master`.
+- Open a Pull Request against `master`. Pull requests are created through the GitHub MCP server configured in OpenCode; it authenticates with a fine-grained personal access token kept outside the repository (`.secret` is gitignored, and the token reaches OpenCode through the `GITHUB_MCP_PAT` environment variable).
 - Commit messages and PR descriptions are written in English.
