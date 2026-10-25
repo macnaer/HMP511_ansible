@@ -1,5 +1,8 @@
 ---
 packages_list:
+  # setfacl is required by Ansible when a task uses become_user
+  # (for example www-data in the WordPress role).
+  - acl
   - curl
   - wget
   - git
