@@ -73,6 +73,23 @@ ansible-playbook site.yml --ask-vault-pass
 
 The deployment command runs both base package setup and WordPress. Check mode does not execute command tasks such as WP-CLI installation or certificate issuance, so it cannot verify those runtime operations.
 
+## Run on one server
+
+`site.yml` normally targets the whole `webservers` group. Pass a host alias with `--limit` to run against one inventory host only:
+
+```bash
+# Dry run against server1
+ansible-playbook site.yml --ask-vault-pass --check --diff --limit server1
+
+# Apply changes to server1
+ansible-playbook site.yml --ask-vault-pass --limit server1
+
+# The same commands work with server2 to target the other host
+ansible-playbook site.yml --ask-vault-pass --check --diff --limit server2
+```
+
+Both the `packages` and `wordpress` roles run only on the selected host. The alias must exist in `hosts` and belong to the `webservers` group. With `wordpress_https_enabled: false` each host serves its own inventory IP, so the same group variables work for either server.
+
 ## Adding packages
 
 Edit `packages_list` in `group_vars/webservers.yml` to change base packages, or `wordpress_packages` to change the WordPress stack packages. Do not duplicate group variables in role defaults.
